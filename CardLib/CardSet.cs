@@ -56,9 +56,8 @@ namespace CardLib
                     CardSetInHand.Add(card);
                 }
                 else
-                { 
                     break;
-                }
+              
             }
 
             return CardSetInHand;
