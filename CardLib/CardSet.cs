@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CardLib
 {
-    internal class CardSet
+    public class CardSet: IEnumerable<Card>
     {
 
         private static readonly Random random = new Random();
         private List<Card> cards = new List<Card>();
         
+        public int Count { get => cards.Count; }
+        public Card LastCard { get => cards[cards.Count - 1]; }
 
         public CardSet()
         {
@@ -22,6 +26,7 @@ namespace CardLib
         {
             this.cards = new List<Card>(cards);
         }
+
         
         public Card this[int i]
         {
@@ -31,104 +36,115 @@ namespace CardLib
 
         public void Shuffle()
         {
-            int n = cards.Count;
-
-            while (n > 1)
+            for (int j = 0; j < 5; j++)
             {
-                n--;
-                int k = random.Next(n + 1);
-                Card card = cards[k];
-                cards[k] = cards[n];
-                cards[n] = card;
+
+                for (int i = 0; i < Count; i++)
+                {
+                    int randNum = random.Next(Count);
+                    Card temp = cards[i];
+                    cards[i] = cards[randNum];
+                    cards[randNum] = temp;
+                }
             }
+        }
+        public Card Pull(Card equalsCard)
+        {
+            Card foundCard = cards.FirstOrDefault(c => c.Equals(equalsCard));
+            if (foundCard != null) Remove(foundCard);
+            return foundCard;
+        }
+        public Card Pull(int index = 0)
+        {
+            if (index < 0 || index >= Count)
+                return null;
+            Card card = cards[index];
+            Remove(index);
+            return card;
         }
         public CardSet Deal(int countOfCards)  
         {
-            
+            if (countOfCards < 0)
+            {
+                throw new Exception("Count of card to deal must be greater than zero");
+            }
+            if (countOfCards > Count) countOfCards = Count;
             CardSet CardSetInHand = new CardSet();
 
             for (int i = 0; i < countOfCards; i++)
             {
-                if (cards.Count > 0)
-                {
-                    Card card = cards[0];
-                    cards.RemoveAt(0);
-                    CardSetInHand.Add(card);
-                }
-                else
-                    break;
-              
+                CardSetInHand.Add(Pull());      
             }
 
             return CardSetInHand;
         }
         public void Sort()
         {
-            cards.Sort(new CardComparer());
+            cards.Sort((card1, card2) => card1.Rank.CompareTo(card2.Rank) == 0 ?
+                                              card1.Suit.CompareTo(card2.Suit) :
+                                              card1.Rank.CompareTo(card2.Rank));
         }
-        public void SortCardSet()
+        public void Add(CardSet CardSet)
         {
-            cards.Sort((card1, card2) => card1.Rank.CompareTo(card2.Rank));
-        }
-        public Card Pull(Card card)
-        {
-            Remove(card);
-            return card;
-        }
-        public Card Pull(int index)
-        {
-            Card card = cards[index];
-            cards.RemoveAt(index);
-            return card;
-        }
-        public void Add(CardSet Cards)
-        {
-            Add(Cards.cards);
+            foreach (var card in CardSet)
+            {
+                cards.Add(card);
+            }
         }
         public void Add(params Card[] cards)
         {
-            
-            for (int i = 0; i < cards.Length; i++)
-            {
-                this.cards.Add(cards[i]);
-            }
+            this.cards.AddRange(cards);
         }
         public void Add(List<Card> cards)
         {
-            for (int i = 0; i < cards.Count; i++)
-            {
-                this.cards[this.cards.Count + i] = cards[i];
-            }
-            
+            Add(cards.ToArray());
+                       
         }
-        public void Remove(Card card)
+        public virtual void Remove(Card card)
         {
             cards.Remove(card);
         }
         public void Remove(int index)
         {
-            cards.RemoveAt(index);
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("Incorrect index");
+            Remove(cards[index]);
         }
         public void RemoveRange(int startIndex, int length)
         {
-            cards.RemoveRange(startIndex, length);
+            for (int i = startIndex; i < startIndex + length; i++)
+            {
+                Remove(cards[i]);
+            }
+        }
+        public void CutTo(int countOfCards) 
+        {
+            while (Count > countOfCards)
+                Remove(0);
         }
         public void Clear()
         {
-            cards.Clear();
+            CutTo(0);
         }
         public void Full(int countOfCards)
         {
-            for (int i = 0; i < countOfCards; i++)
-            {
-                foreach (Suit suit in Enum.GetValues(typeof(Suit)))
-                {
-                    foreach (Rank rank in Enum.GetValues(typeof(Rank)))
+            Full();
+            CutTo(countOfCards);
+        }
+        public void Full()
+        {
+            foreach (CardRank rank in Enum.GetValues(typeof(CardRank)))
+                { 
+                    foreach (CardSuit suit in Enum.GetValues(typeof(CardSuit)))
                     {
                         cards.Add(new Card(rank, suit));
                     }
                 }
-            }
+            
         }
+
+        public IEnumerator<Card> GetEnumerator() => cards.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => cards.GetEnumerator();
     }
 }

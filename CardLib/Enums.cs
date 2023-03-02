@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CardLib
 {
-    public enum Rank
+    public enum CardRank
     {
         Two = 2,
         Three,
@@ -20,7 +20,7 @@ namespace CardLib
         King,
         Ace
     }
-    public enum Suit 
+    public enum CardSuit 
     {
         Heart,
         Diamond,
@@ -28,5 +28,4 @@ namespace CardLib
         Spade,
         Length
     }
-
 }

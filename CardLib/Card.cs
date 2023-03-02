@@ -5,33 +5,33 @@ namespace CardLib
 {
     public class Card
     {
-        private static Dictionary<Rank, string> strRanks = new Dictionary<Rank, string>() { };
-        private static Dictionary<Suit, string> strSuit = new Dictionary<Suit, string>()
+        private static Dictionary<CardRank, string> strRanks = new Dictionary<CardRank, string>() { };
+        private static Dictionary<CardSuit, string> strSuit = new Dictionary<CardSuit, string>()
         {
-            [Suit.Club] = "♣️",
-            [Suit.Diamond] = "♦️",
-            [Suit.Spade] = "♠️",
-            [Suit.Heart] = "♥️"
+            [CardSuit.Club] = "♣",
+            [CardSuit.Diamond] = "♦",
+            [CardSuit.Spade] = "♠",
+            [CardSuit.Heart] = "♥"
         };
         static Card()
         {
             for (int i = 2; i <= 10; i++)
             {
-                strRanks[(Rank)i] = i.ToString();
+                strRanks[(CardRank)i] = i.ToString();
             }
-            strRanks[Rank.Jack] = "J";
-            strRanks[Rank.Queen] = "Q";
-            strRanks[Rank.King] = "K";
-            strRanks[Rank.Ace] = "A";
+            strRanks[CardRank.Jack] = "J";
+            strRanks[CardRank.Queen] = "Q";
+            strRanks[CardRank.King] = "K";
+            strRanks[CardRank.Ace] = "A";
         }
-        public Card(Rank rank, Suit suit)
+        public Card(CardRank rank, CardSuit suit)
         {
             Rank = rank;
             Suit = suit;
         }
 
-        public Rank Rank { get; set; }
-        public Suit Suit { get; set; }
+        public CardRank Rank { get; set; }
+        public CardSuit Suit { get; set; }
 
         public override bool Equals(object obj)
         {

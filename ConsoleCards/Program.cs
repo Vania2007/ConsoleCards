@@ -9,7 +9,7 @@ namespace ConsoleCards
         static void Main(string[] args)
         {
             
-            Console.WriteLine(new Card(Rank.King, Suit.Heart));
+            Console.WriteLine(new Card(CardRank.King, CardSuit.Heart));
         }
     }
 }
